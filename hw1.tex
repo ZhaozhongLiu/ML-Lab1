@@ -1,0 +1,411 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{amsmath,amsfonts,amssymb,amsthm,commath,dsfont}
+\usepackage{enumitem}
+\usepackage{framed}
+\usepackage{xspace}
+\usepackage{microtype}
+\usepackage{float}
+\usepackage[round]{natbib}
+\usepackage{cleveref}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage[breakable]{tcolorbox}
+\tcbset{breakable}
+\usepackage{mathtools}
+
+\newcommand{\colbar}{\rule[-3mm]{.3mm}{1.5em}}
+\newcommand{\rowbar}{\rule[.5ex]{1.5em}{.3mm}}
+\DeclareMathOperator{\rank}{rank}
+
+% following loops stolen from djhsu
+\def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+% \bbA, \bbB, ...
+\def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \cA, \cB, ...
+\def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+
+% \vA, \vB, ..., \va, \vb, ...
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+\ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+
+% \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+\def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+\ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+\newcommand\T{{\scriptscriptstyle\mathsf{T}}}
+\def\diag{\textup{diag}}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\def\SPAN{\textup{span}}
+\def\tu{\textup{u}}
+\def\R{\mathbb{R}}
+\def\E{\mathbb{E}}
+\def\Z{\mathbb{Z}}
+\def\be{\mathbf{e}}
+\def\nf{\nabla f}
+\def\veps{\varepsilon}
+\def\cl{\textup{cl}}
+\def\inte{\textup{int}}
+\def\dom{\textup{dom}}
+\def\Rad{\textup{Rad}}
+\def\lsq{\ell_{\textup{sq}}}
+\def\hcR{\widehat{\cR}}
+\def\hcRl{\hcR_\ell}
+\def\hcRlog{\hcR_{\log}}
+\def\cRl{\cR_\ell}
+\def\hcE{\widehat{\cE}}
+\def\cEl{\cE_\ell}
+\def\hcEl{\hcE_\ell}
+\def\eps{\epsilon}
+\def\1{\mathds{1}}
+\newcommand{\red}[1]{{\color{red} #1}}
+\newcommand{\blue}[1]{{\color{blue} #1}}
+\def\srelu{\sigma_{\textup{r}}}
+\def\vsrelu{\vec{\sigma_{\textup{r}}}}
+\def\vol{\textup{vol}}
+\def\vwols{\hat{\vw}_{\textrm{ols}}}
+\def\llog{\ell_{\log}}
+\def\CE{\text{CE}}
+\def\hw{\textbf{[\texttt{hw1}]}\xspace}
+\def\hwcode{\textbf{[\texttt{hw1code}]}\xspace}
+\newcommand{\pww}[1]{\hat p_{#1}}
+
+\newcommand{\ip}[2]{\left\langle #1, #2 \right \rangle}
+\newcommand{\mjt}[1]{{\color{blue}\emph\textbf{[M:}~#1~\textbf{]}}}
+\newcommand{\sahand}[1]{{\color{green}\emph\textbf{[Sah:}~#1~\textbf{]}}}
+
+\newtheorem{fact}{Fact}
+\newtheorem{lemma}{Lemma}
+\newtheorem{claim}{Claim}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{condition}{Condition}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+
+\newenvironment{Q}
+{%
+  \clearpage
+  \item
+  }
+  {%
+    \phantom{s} %lol doesn't work
+    \bigskip
+    \textbf{Solution.}
+  }
+
+  \title{CSCI-GA.2565 --- Homework 1}
+  \author{\emph{your name and NetID here}}
+  \date{Version 1.0}
+
+  \begin{document}
+  \maketitle
+
+  \noindent\textbf{Instructions.}
+  \begin{itemize}
+    \item
+      \textbf{Due date.}
+      Homework is due \textbf{Tuesday, September 30, at noon ET}.
+
+    \item
+      \textbf{Gradescope submission.}
+      Everyone must submit individually at gradescope under \texttt{hw1} and \texttt{hw1code}:
+      \texttt{hw1code} is just python code, whereas \texttt{hw1} contains everything else.
+      For clarity, problem parts are annotated with where the corresponding submissions go.
+
+
+      \begin{itemize}
+        \item
+          \textbf{Submitting \texttt{hw1}.}
+          \texttt{hw1} must be submitted as a single PDF file, and typeset in some way,
+          for instance using \LaTeX, Markdown, Google Docs, MS Word; you can even use an OCR
+          package (or a modern multi-modal LLM) to convert handwriting to \LaTeX and then clean
+          it up for submission.  Graders reserve the right to award zero points for
+          solutions they consider illegible.
+
+        \item
+          \textbf{Submitting \texttt{hw1code}.}
+          Only upload the two python files \texttt{hw1.py} and \texttt{hw1\_utils.py};
+          don't upload a zip file or additional files.
+
+      \end{itemize}
+
+    \item
+      \textbf{Consulting LLMs and friends.}
+      You may discuss with your peers and you may use LLMs.  \emph{However,} you are strongly
+      advised to make a serious attempt on all problems alone, and if you consult anyone,
+      make a serious attempt to understand the solution alone afterwards.
+      You must document credit assignment in a special final question in the homework.
+
+    \item
+      \textbf{Evaluation.}
+      We reserve the right to give a 0 to a submission which violates the intent of the assignment
+      and is morally equivalent to a blank response.
+      \begin{itemize}
+        \item
+          \texttt{hw1code:} your grade is what the autograder gives you;
+          note that you may re-submit as many times as you like until the deadline.
+          However, we may reduce your auto-graded score if your solution simply hard-codes answers.
+
+        \item
+          \texttt{hw1:} you can receive $0$ points for a blank solution, an illegible solution,
+          or a solution which does not correctly mark problem parts with boxes in the gradescope
+          interface (equivalent to illegibility).
+          All other solutions receive full points, \emph{however} the graders do leave feedback
+          so please check afterwards even if you received a perfect score.
+
+      \end{itemize}
+
+    \item
+      \textbf{Regrades.}  Use the gradescope interface.
+
+    \item
+      \textbf{Late days.}
+      We track 3 late days across the semester per student.
+
+    \item
+      \textbf{Library routines.}
+      Coding problems come with suggested ``library routines''; we include these to reduce
+      your time fishing around APIs, but you are free to use other APIs.
+  \end{itemize}
+  \noindent\textbf{Version history.}
+  \begin{enumerate}
+    \item[1.0.] Initial version.
+  \end{enumerate}
+
+  \begin{enumerate}[font={\Large\bfseries},left=0pt]
+    \begin{Q}
+  \textbf{\Large Linear Regression/SVD.}
+
+  Throughout this problem let $\vX\in\R^{n\times d}$ with $i$-th row $\vx_i\in\R^d$.
+  Suppose $\vX = \sum_{i = 1}^r s_i \vu_i \vv_i^\top$ is its singular value decomposition,
+  where $\vu_i\in\R^n$ are left singular vectors, $\vv_i\in\R^d$ are right singular vectors,
+  $s_i>0$ are singular values, and $r = \rank(\vX)$.
+  \begin{enumerate}
+    \item \hw Let the dataset consist of $n_i>0$ copies of the standard basis vector $\ve_i\in\R^d$ for each $i\in\cbr{1,\ldots,d}$,
+      with labels $\del{y_{i_j}}_{j = 1}^{n_i}$ and $\sum_{i = 1}^d n_i = n$.
+      Equivalently, the training set is
+      \[
+        \cbr{\del{\ve_i, y_{i_j}} : i\in\cbr{1,\ldots,d},\ j\in\cbr{1,\ldots,n_i}}.
+      \]
+    Show that for a vector $\vw$ that minimizes the empirical risk under squared loss,
+    the components $w_i$ of $\vw$ are the averages of the labels $\del{y_{i_j}}_{j = 1}^{n_i}$: $w_i = \frac{1}{n_i}\sum_{j = 1}^{n_i} y_{i_j}$.
+    
+    \textbf{Hint:} Write out the expression for the empirical risk with the squared loss and set the gradient equal to zero.
+    
+    \textbf{Remark:} This illustrates the classic ``regression toward the mean'' phenomenon.
+    
+    \item \hw Returning to a general matrix $\vX$, show that if the label vector $\vy$ is a linear combination of $\cbr{\vu_i}_{i = 1}^r$ then there exists a $\vw$ for which the empirical risk is zero (meaning $\vX \vw = \vy$).
+    
+    \textbf{Hint:} Either consider the range of $\vX$ and use the SVD, or compute the empirical risk explicitly with $\vy = \sum_{i = 1}^r a_i \vu_i$ for some constants $a_i$ and $\hat{\vw}_{\textrm{ols}} = \vX^+ \vy$.
+    
+    \textbf{Remark:} It's also not hard to show that if $\vy$ is not a linear combination of the $\cbr{\vu_i}_{i = 1}^r$, then the empirical risk must be nonzero.
+    
+    \item \hw Show that $\vX^\top \vX$ is invertible if and only if $(\vx_i)_{i = 1}^n$ spans $\mathbb{R}^d$.
+    
+    \textbf{Hint:} Recall that the squares of the singular values of $\vX$ are eigenvalues of $\vX^\top \vX$.
+
+    \textbf{Remark:} This characterizes when linear regression has a unique solution due to the normal equation (note that we always have at least one solution obtained by the pseudoinverse). We would not have had a unique solution for part (a) if some $n_i = 0$.
+    
+    \item \hw Provide a matrix $\vX$ such that $\vX^\top \vX$ is invertible and $\vX\vX^\top$ is not. Include a formal verification of this for full points.
+    
+    \textbf{Hint:} Use part (c). It may be helpful to think about conditions under which a matrix is not invertible.
+    
+    
+  \end{enumerate}
+  \end{Q}
+
+
+    \begin{Q}
+      \textbf{\Large Linear Regression.}
+
+      Recall that the empirical risk in the linear regression method is defined as $\hcR(\vw) := \frac{1}{2n}\sum_{i=1}^n (\vw^\top \vx_i - y_i)^2$, where $\vx_i \in \R^d$ is a data point and $y_i$ is an associated label.
+      \begin{enumerate}
+        \item \hwcode Implement linear regression using gradient descent in the \texttt{linear\_gd(X, Y, lrate, num\_iter)} function of \texttt{hw1.py}. You are given as input a training set \texttt{X} as an $n \times d$ tensor, training labels \texttt{Y} as an $n \times 1$ tensor, a learning rate \texttt{lrate}, and the number of iterations of gradient descent to run \texttt{num\_iter}.  Using gradient descent, find parameters $\vw$ that minimize the empirical risk $\hcR(\vw)$. Use $\vw = 0$ as your initial parameters, and return your final $\vw$ as output. Prepend a column of ones to \texttt{X} in order to accommodate a bias term in $\vw$. Return $\vw \in \R^{(d+1)\times 1}$ with the bias as the first entry.
+
+          \textbf{Library routines:} \texttt{torch.matmul (@), X.shape, X.t(), torch.cat, torch.ones, torch.zeros, torch.reshape}.
+
+        \item \hwcode Implement linear regression by using the pseudoinverse to solve for $\vw$ in the \texttt{linear\_normal(X,Y)} function of \texttt{hw1.py}. You are given a training set \texttt{X} as an $n \times d$ tensor and training labels \texttt{Y} as an $n \times 1$ tensor. Return your parameters $\vw$ as output. As before, make sure to accommodate a bias term by prepending ones to the training examples \texttt{X}. Return $\vw \in \R^{(d+1)\times 1}$ with the bias as the first entry.
+
+          \textbf{Library routines:} \texttt{torch.matmul (@), torch.cat, torch.ones, torch.pinverse}.
+
+        \item \hw Implement the \texttt{plot\_linear()} function in \texttt{hw1.py}.  Use the provided function \texttt{hw1\_utils.load\_reg\_data()} to generate a training set \texttt{X} and training labels \texttt{Y}. Plot the curve generated by \texttt{linear\_normal()} along with the points from the data set.  Return the plot as output.  Include the plot in your written submission.
+
+          \textbf{Library routines:} \texttt{torch.matmul (@), torch.cat, torch.ones, plt.plot, plt.scatter,}
+
+          \texttt{plt.show, plt.gcf} where \texttt{plt} refers to the \texttt{matplotlib.pyplot} library.
+      \end{enumerate}
+    \end{Q}
+
+    \begin{Q}
+  \textbf{\Large Polynomial Regression.}
+
+  In Problem 2 you constructed a linear model $\vw^\top \vx = \sum_{i=1}^d x_i w_i$.  In this problem you will use the same setup as in the previous problem, but enhance your linear model by doing a quadratic expansion of the features.  Namely, you will construct a new linear model $f_{\vw}$ with parameters
+  \[
+    (w_{0}, w_{01},\dots,w_{0d},w_{11}, w_{12},\dots,w_{1d},w_{22}, w_{23},\dots,w_{2d},\dots, w_{dd})^\top,
+  \]
+    defined by
+  	\begin{align*}
+  	f_{\vw}(x) = \vw^\top \phi(\vx) = w_0 + \sum_{i=1}^d w_{0i} x_i + \sum_{i\leq j}^dw_{ij} x_ix_j.
+  	\end{align*}
+  	
+ \textbf{Warning:} If the computational complexity of your implementation is high, it may crash the autograder (try to optimize your algorithm if it does)!
+  \begin{enumerate}
+ \item \hw Given a $3$-dimensional feature vector $\vx = (x_1,x_2,x_3)$, completely write out the quadratic expanded feature vector $\phi(\vx)$.
+  \item \hwcode Implement the \texttt{poly\_gd()} function in \texttt{hw1.py}.  The input is in the same format as it was in Problem 2.  Implement gradient descent on this training set with $\vw$ initialized to 0.  Return $\vw$ as the output with terms in this exact order: bias, linear, then quadratic.  For example, if $d = 3$ then you would return $(w_0, w_{01},w_{02},w_{03},w_{11},w_{12},w_{13},w_{22},w_{23},w_{33})$.
+  
+ \textbf{Library routines:} \texttt{torch.cat, torch.ones, torch.zeros, torch.stack.}
+  
+ \textbf{Hint (feature order, important for autograder):} Prepend a column of ones to \texttt{X}, then append the \emph{quadratic} features (including cross terms). Use the following exact order:
+ $$\phi(\vx) = \Big[\ 1,\ x_1,\ldots,x_d,\ x_1^2,\ x_1x_2,\ldots,\ x_1x_d,\ x_2^2,\ x_2x_3,\ldots,\ x_2x_d,\ \ldots,\ x_d^2\ \Big]^\top.$$
+ Equivalently, generate terms in lexicographic order over index pairs $(i,j)$ with $1\le i\le j\le d$: $(1,1), (1,2),\ldots,(1,d),(2,2),(2,3),\ldots,(d,d)$. Do not include duplicates (e.g., include $x_1x_2$ but not $x_2x_1$). The autograder expects this exact ordering.
+  
+ \item \hwcode Implement the \texttt{poly\_normal} function in \texttt{hw1.py}.  You are given the same data set as from part (b), but this time determine $\vw$ by using the pseudoinverse.  Return $\vw$ in the same order as in part (b). Return $\vw \in \R^{\bigl(1 + d + \tfrac{d(d+1)}{2}\bigr)\times 1}$ with the bias first, then linear, then quadratic terms.
+  
+  \textbf{Library routines:} \texttt{torch.pinverse.}
+  
+  \textbf{Hint:} You will still need to transform the matrix \texttt{X} in the same way as in part (b).
+  
+ \item \hw Implement the \texttt{plot\_poly()} function in \texttt{hw1.py}.  Use the provided function \texttt{hw1\_utils.load\_reg\_data()} to generate a training set \texttt{X} and training labels \texttt{Y}. Plot the curve generated by \texttt{poly\_normal()} along with the points from the data set.  Return the plot as output and include it in your written submission.  Compare and contrast this plot with the plot from Problem 2.  Which model appears to approximate the data better? Justify your answer.
+  
+  \textbf{Library routines:} \texttt{plt.plot, plt.scatter, plt.show, plt.gcf.}
+  
+ \item \hw The Minsky-Papert XOR problem is a classification problem with data set: \begin{align*}
+  X = \{(-1,+1), (+1,-1), (-1,-1),(+1,+1)\}
+\end{align*}
+where the label for a given point $(x_1,x_2)$ is given by its product $x_1x_2$.  For example, the point $(-1,+1)$ would be given label $y = (-1)(1) = -1$.  Implement the \texttt{poly\_xor()} function in \texttt{hw1.py}.  In this function you will load the XOR data set by calling the \texttt{hw1\_utils.load\_xor\_data()} function, and then apply the \texttt{linear\_normal()} and \texttt{poly\_normal()} functions to generate predictions for the XOR points. Include a plot of contour lines that show how each model classifies points in your written submission. Return the predictions for both the linear model and the polynomial model and use \texttt{contour\_plot()} in \texttt{hw1\_utils.py} to help with the plot. Do both models correctly classify all points? (Note that red corresponds to larger values and blue to smaller values when using \texttt{contour\_plot} with the ``coolwarm" colormap).
+
+\textbf{Using \texttt{contour\_plot()} effectively:} Define a small prediction function that maps an $(n\times d)$ tensor of grid points to an $(n\times 1)$ tensor of scores, then pass it to \texttt{contour\_plot}. For a linear model with parameters $\vw\in\R^{(d+1)\times 1}$, one convenient choice is
+\[
+\texttt{pred\_lin}(Z) = \bigl[\mathbf{1}\ \ Z\bigr] \vw,\quad \text{where } Z\in\R^{n\times d} \text{ and } \mathbf{1}\in\R^{n\times 1}.
+\]
+For the quadratic model, use your feature map $\phi(Z)$ constructed in the order specified above and compute $\texttt{pred\_poly}(Z) = \phi(Z)\,\vw$. The decision boundary corresponds to the $0$-level contour; you can emphasize it by supplying a \texttt{levels} argument (e.g., \texttt{levels=[0]}) to draw just that contour.
+
+\textbf{Hint:} A ``Contour plot" is a way to represent a 3-dimensional surface in a 2-D figure. In this example, the data points are pined to the figure with their features $(x_1, x_2)$ as the coordinates in 2-D space (e.g., x and y axis); the third dimension (e.g., the predictions of the data points) is labeled on the points in the figure. The lines or curves that link the grid points with the same predictions together are called the ``contours". See \texttt{contour\_plot()} in \texttt{hw1\_utils.py} for details.
+  \end{enumerate}
+  \end{Q}
+
+    \begin{Q}
+  \textbf{\Large Logistic Regression.}
+
+  Recall the empirical risk $\hcR$ for logistic regression (as presented in lecture 3). Throughout this problem, assume labels $y_i \in \cbr{-1,+1}$:
+  \begin{align*}
+  \hcR_{\log}(\vw) = \frac{1}{n} \sum_{i=1}^n \ln ( 1 + \exp( - y_i \vw^\top \vx_i ) ).
+  \end{align*}
+  Here you will minimize this risk using gradient descent.
+  \begin{enumerate}
+  \item \hw In your written submission, derive the gradient descent update rule for this empirical risk by taking the gradient.  Write your answer in terms of the learning rate $\eta$, previous parameters $\vw$, new parameters $\vw'$, number of examples $n$, and training examples $(\vx_i, y_i)$.  Show all of your steps.
+  \item \hwcode Implement the \texttt{logistic()} function in \texttt{hw1.py}.  You are given as input a training set \texttt{X}, training labels \texttt{Y}, a learning rate \texttt{lrate}, and number of gradient updates \texttt{num\_iter}.  Implement gradient descent to find parameters $\vw$ that minimize the empirical risk $\hcR_{\log}(\vw)$. Perform gradient descent for \texttt{num\_iter} updates with a learning rate of \texttt{lrate}, initializing $\vw = 0$ and returning $\vw$ as output. Don't forget to prepend \texttt{X} with a column of ones. Return $\vw \in \R^{(d+1)\times 1}$ with the bias as the first entry.
+  
+  \textbf{Library routines:} \texttt{torch.matmul (@), X.t(), torch.sigmoid, torch.special.softplus (or torch.logaddexp), torch.exp.}
+  
+  \item \hw Implement the \texttt{logistic\_vs\_ols()} function in \texttt{hw1.py}. Use \texttt{hw1\_utils.load\_logistic\_data()} to generate a training set \texttt{X} and training labels \texttt{Y}.  Run \texttt{logistic(X,Y)} from part (b) taking \texttt{X} and \texttt{Y} as input to obtain parameters $\vw$.  Also run \texttt{linear\_gd(X,Y)} from Problem 2 to obtain parameters $\vw$.  Plot the decision boundaries for your logistic regression and least squares models along with the data \texttt{X}. Which model appears to classify the data better? Explain why you believe your choice is the better classifier for this problem.
+  
+  \textbf{Library routines:} \texttt{torch.linspace, plt.scatter, plt.plot, plt.show, plt.gcf.}
+  
+  \textbf{Hints:}
+  \begin{itemize}
+      \item The positive and negative points are guaranteed to be linearly separable (though an algorithm may or may not find the optimal line to separate them).
+      \item Decision boundary with bias: let $\vz = \begin{bmatrix}1 \\ \vx\end{bmatrix}$ denote the augmented feature and $\vw$ include the bias; the boundary is $\cbr{\vz : \vw^\top \vz = 0}$. When plotting in 2D with $\vw = (w_0, w_1, w_2)^\top$, draw the line $x_2 = -(w_0 + w_1 x_1)/w_2$ for $|w_2|>0$, or a vertical line at $x_1 = -w_0/w_1$ if $|w_2|$ is tiny.
+      \item Average the gradient over examples (divide by $n$); do not sum.
+      \item In order to make the two models significantly different, we recommend that you train the logistic regression with a large \texttt{num\_iter} (e.g., 1,000,000 or even larger).
+  \end{itemize}
+  \end{enumerate}
+  \end{Q}
+
+  \begin{Q}
+    \textbf{\Large N-Gram Next Token Prediction.}
+  
+    Recall the empirical risk $\hcR$ for cross entropy (as presented in lecture 2).
+    In this problem, let $\vX\in\R^{n\times d}$, $\vW\in\R^{d\times k}$, and labels $Y\in\cbr{0,\ldots,k-1}^{n\times 1}$.
+    We consider a linear predictor $f:\R^d\to\R^k$ given by $f(\vx)=\vW^\top\vx$ (no bias term):
+    \begin{align*}
+    \hcR_{\CE}(\vW) = -\frac{1}{n} \sum_{i=1}^n \ln \left( \frac{\exp( f_{y_i}(\vx_i) )}{\sum_{j=1}^{k} \exp( f_j(\vx_i) )} \right).
+    \end{align*}
+    You will minimize this risk using gradient descent, and apply it to next token prediction.
+    \begin{enumerate}
+    \item \hw In your written submission, derive the gradient descent update rule for this empirical risk by taking the gradient.  Write your answer in terms of the learning rate $\eta$, previous parameters $\vW$, new parameters $\vW'$, number of examples $n$, training examples $(\vx_i, y_i)$, and probabilities $p(c|x_i) = \frac{\exp( f_c(\vx_i) )}{\sum_{j=1}^{k} \exp( f_j(\vx_i) )}$.  Show all of your steps.
+    \item \hwcode Implement the \texttt{cross\_entropy()} function in \texttt{hw1.py}.
+    You are given as input a training set \texttt{X} ($n\times d$), training labels \texttt{Y} (integer class indices in $\cbr{0,\ldots,k-1}$, shaped $n\times 1$),
+    number of classes \texttt{k}, a learning rate \texttt{lrate}, and number of gradient updates \texttt{num\_iter}.
+    Implement gradient descent to find parameters $\vW\in\R^{d\times k}$ that minimize the empirical risk $\hcR_{\CE}(\vW)$.
+    Perform gradient descent for \texttt{num\_iter} updates with a learning rate of \texttt{lrate}, initializing $\vW = 0$ and returning $\vW$ as output.
+    Unlike previous problems, do \emph{not} incorporate a bias term. Average the gradient over the batch (divide by $n$), do not sum.
+    Construct one-hot targets via either \texttt{torch.nn.functional.one\_hot(Y.view(-1), num\_classes=k).float()} or
+    \texttt{torch.zeros(n,k).scatter\_(1, Y, 1.0)}.
+    
+    \textbf{Library routines:} \texttt{torch.matmul (@), X.t(), torch.softmax;\\
+    optionally torch.logsumexp/torch.log\_softmax for stability}.
+    
+    \item \hwcode Implement the \texttt{get\_ntp\_weights()} function in \texttt{hw1.py}.
+    You are given as input the context size \texttt{n} and the embedding dimension \texttt{embedding\_dim}.
+    We will use a small subset of the TinyStories dataset \citep{tinystories} as our text sample,
+    which you can extract using \texttt{hw1\_utils.load\_ntp\_data()}.
+    This function will return text data split into tokens \texttt{tokenized\_data}
+    (our tokenizer treats each word as a token),
+    the list of all tokens in order of their id \texttt{sorted\_words},
+    and the inverse mapping of token to id \texttt{word\_to\_idx}.
+    You will then need to create the appropriate N-gram training data from \texttt{tokenized\_data}.
+    To do so, for every list of words in \texttt{tokenized\_data} (which is a list of lists of words),
+    then create a training sample from every set of $n+1$ consecutive words (the first $n$ words are the context, and the last word is the target).
+    Given a list of $w$ words, you should create exactly $w-n$ training samples (assuming $w \geq n$, of course); skip sentences shorter than $n+1$.
+    Use \texttt{hw1\_utils.load\_random\_embeddings()} to get random feature embeddings for each word in the vocabulary.
+    Run \texttt{cross\_entropy(X,Y,k)} from part (b) taking \texttt{X}, \texttt{Y}, and vocabulary size \texttt{k} as input to obtain parameters $\vW$.
+    Use the default learning rate and number of iterations.
+    
+    \textbf{Library routines:} \texttt{torch.stack.}
+
+    \item \hwcode Implement the \texttt{generate\_text()} function in \texttt{hw1.py}.
+    You are given as input the parameters $\vW$ from the \texttt{get\_ntp\_weights()} function in part (c),
+    the context size \texttt{n}, the number of additional tokens to generate \texttt{num\_tokens},
+    the embedding dimension \texttt{embedding\_dim}, and an initial context string \texttt{context}.
+    Use \texttt{hw1\_utils.load\_ntp\_data()} and \texttt{hw1\_utils.load\_random\_embeddings()} to get the rest of the necessary data.
+    Greedy decoding: assume the context contains at least $n$ tokens; if longer, use the last $n$ tokens at each step.
+    At each step, map tokens to indices, concatenate embeddings of the last $n$ indices to form $\vx\in\R^d$ with $d = n\cdot\texttt{embedding\_dim}$,
+    compute logits $\vW^\top \vx \in \R^k$, take \texttt{argmax} to pick the next token index, append it, and repeat.
+    Return a string containing the initial context as well as all of the generated words, with each word separated by a space.
+    
+    \textbf{Library routines:} \texttt{torch.argmax.}
+    
+    \item \hw Try generating at least 5 strings using different initial context strings
+    using the \texttt{generate\_text()} function in part (d) (use $\texttt{n}=4$, $\texttt{num\_tokens} \geq 20$, and $\texttt{embedding\_dim}=10$),
+    and include the results here. Do you notice anything unusual about the generated strings? Why do you think this happens?
+    \end{enumerate}
+    \end{Q}
+    \clearpage
+    \item \textbf{\Large LLM Use, collaboration, and other sources.}
+    
+    \hw Please document, in detail, all your sources, including include LLMs, friends,
+    internet resources, etc.  For example:
+    \begin{enumerate}
+      \item[1a.] I asked my friend, then I found a different way to derive the same solution.
+      \item[1b.] GPT-5 solved the problem in one shot, but then I rewrote it once on
+        paper, and a few days later tried to re-derive an answer from scratch.
+      \item[1c.] I accidentally found this via a google search,
+        and had trouble forgetting the answer I found, but still typed it from scratch
+        without copy-paste.
+      \item[1d.] \dots
+      \item[\vdots] 
+      \item[6.] I used my solution to problem 5 to write this answer.
+    \end{enumerate}
+
+    \bigskip
+    \textbf{Answer.}
+\end{enumerate}
+\clearpage
+\bibliography{refs}
+\bibliographystyle{plainnat}
+
+\end{document}
