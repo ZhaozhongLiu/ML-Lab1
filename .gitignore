@@ -66,3 +66,4 @@ ENV/
 *.synctex.gz
 *.fls
 *.fdb_latexmk
+hw1-new.py
