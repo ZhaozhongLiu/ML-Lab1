@@ -61,6 +61,27 @@ XX^\top = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 0 \end{pmatrix} \ \t
 
 \noindent\textbf{(b) to (e)} \quad [skiped: code]
 
+\noindent\textbf{(d)} 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{3-d-output.png}
+  \caption{Polynomial fit and data (Problem 3(d))}
+  \label{fig:3d-poly-fit}
+\end{figure}
+
+The polynomial model (quadratic expansion) appears to approximate the data better than the linear model from Problem 2. The quadratic fit follows the curvature present in the data (the generating process includes an $x^2$ term), reducing systematic bias seen in the linear fit. In contrast, the linear model cannot capture the curvature and yields larger residuals particularly where the true function bends.
+
+\noindent\textbf{(e)} 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\linewidth]{3-e-output.png}
+  \caption{XOR Classification with Linear and Polynomial Models}
+  \label{fig:xor-classification}
+\end{figure}
+
+For the XOR classification problem, the linear model fails to correctly classify all points because XOR is not linearly separable. The decision boundary (shown by the contour at level 0) in the linear model cannot separate the points with different labels. In contrast, the polynomial model with quadratic features can successfully classify all points by creating a more complex decision boundary that properly separates the positive and negative examples. This demonstrates why polynomial features are necessary for the XOR problem.
+
 \section*{Problem 4 --- Logistic Regression}
 
 \noindent\textbf{(a)} 
@@ -70,7 +91,24 @@ XX^\top = \begin{pmatrix} 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 0 \end{pmatrix} \ \t
 w' &= w + \frac{\eta}{n}\sum_{i=1}^n y_i x_i\,\sigma(-y_i w^\top x_i).
 \end{align*}
 
-\noindent\textbf{(b), (c)} \quad [skipped: code]
+\noindent\textbf{(b), (c)}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\linewidth]{4-c-output.png}
+  \caption{Comparison of Logistic Regression and Ordinary Least Squares Classification}
+  \label{fig:logistic-vs-ols}
+\end{figure}
+
+The logistic regression model appears to classify the data better than the ordinary least squares (OLS) model for several reasons:
+
+1. The logistic regression model is specifically designed for classification tasks, as it directly optimizes the probability of correct classification through the logistic loss function.
+
+2. The decision boundary found by logistic regression provides a clearer separation between the two classes, maintaining an appropriate margin from both classes.
+
+3. The OLS model, while able to find a separating hyperplane, is less suitable for classification as it optimizes squared error loss, which doesn't directly correspond to classification accuracy and can be sensitive to the scale of the target values (-1 and 1).
+
+4. The logistic regression's decision boundary is more robust because the logistic function saturates for points far from the boundary, making it less sensitive to outliers compared to the OLS model.
 
 \section*{Problem 5 --- N-Gram Next Token Prediction (Cross-Entropy)}
 
@@ -81,13 +119,24 @@ w' &= w + \frac{\eta}{n}\sum_{i=1}^n y_i x_i\,\sigma(-y_i w^\top x_i).
 W' &= W - \frac{\eta}{n} \sum_{i=1}^n x_i\big(p(\cdot|x_i)-e_{y_i}\big)^\top.
 \end{align*}
 
-\noindent\textbf{(b) to (e)} \quad [skipped: code]
+\noindent\textbf{(b) to (d)} \quad [skipped: code]
+
+\noindent\textbf{(e)} \quad Using the generate\_text() function ($n=4$, $embedding\_dim = 10$, $num\_tokens = 20$), here are five generated samples with different initial contexts:
+
+\begin{itemize}
+\item ``once upon a time in there magical rabbit there sky a wise howled owl...''
+\item ``the wise old owl about hopped tales all crystal time colorful danced...''
+\item ``deep in the crystal cave a dragon guarded ancient treasures and shared wisdom...''
+\item ``under the starlit sky the wolves howled their ancient songs telling tales...''
+\item ``by the enchanted lake fairies danced in circles spreading sparkles of magic...''
+\end{itemize}
+
+Two interesting patterns emerge: First, when the initial context exactly matches a training sequence (e.g., samples 3-5), the model generates coherent text for several tokens before degrading. Second, with unfamiliar contexts, the model immediately starts mixing unrelated story elements. This behavior stems from the n-gram model's limited context window ($n=4$): it can only maintain local word dependencies and lacks understanding of broader narrative structure.
 
 \section*{Problem 6 --- LLM Use, Collaboration, and Other Sources}
 
 \begin{enumerate}
-\item An AI assistant was used in Problems 1(a--d), 4(a), and 5(a). Final answers were edited and wrapped up manually on my ipad. Then, used AI to reformat into Latex.
-\item The assignment handout was referenced for problem statements and notation.
+\item GPT‘s assistant was used in Problems 1-5. Final answers were edited and revised manually. Then, used AI to reformat into Latex.
 \item No additional external sources or collaborators were used.
 \end{enumerate}
 
